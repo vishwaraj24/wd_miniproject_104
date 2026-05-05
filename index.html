@@ -20,37 +20,16 @@ body{
   display:flex;
   justify-content:center;
   align-items:center;
-  background: radial-gradient(circle at top,#0f172a,#020617);
-  overflow:hidden;
-}
-
-/* BACKGROUND GLOW */
-body::before{
-  content:'';
-  position:absolute;
-  width:400px;
-  height:400px;
-  background:linear-gradient(45deg,#22c55e,#00f7ff);
-  filter:blur(120px);
-  animation:move 8s infinite alternate;
-}
-
-@keyframes move{
-  from{transform:translate(-100px,-100px);}
-  to{transform:translate(100px,100px);}
+  background:#f1f5f9;
 }
 
 /* MAIN CARD */
 .container{
-  width:380px;
+  width:400px;
   padding:25px;
   border-radius:20px;
-  background:rgba(255,255,255,0.06);
-  backdrop-filter:blur(20px);
-  border:1px solid rgba(255,255,255,0.1);
-  color:#fff;
-  position:relative;
-  z-index:1;
+  background:#ffffff;
+  box-shadow:0 10px 40px rgba(0,0,0,0.1);
 }
 
 /* HEADER */
@@ -63,6 +42,7 @@ body::before{
 
 .header h1{
   font-size:20px;
+  color:#111;
 }
 
 /* CIRCLE PROGRESS */
@@ -70,14 +50,16 @@ body::before{
   width:80px;
   height:80px;
   border-radius:50%;
-  background:conic-gradient(#22c55e 65%, #1e293b 0);
+  background:conic-gradient(#22c55e 0%, #e5e7eb 0%);
   display:flex;
   justify-content:center;
   align-items:center;
+  transition:0.3s;
 }
 
 .circle span{
   font-size:14px;
+  color:#111;
 }
 
 /* STREAK */
@@ -88,9 +70,9 @@ body::before{
 }
 
 .streak div{
-  background:rgba(255,255,255,0.08);
-  padding:10px;
-  border-radius:10px;
+  background:#f8fafc;
+  padding:12px;
+  border-radius:12px;
   width:48%;
   text-align:center;
 }
@@ -99,42 +81,40 @@ body::before{
   color:#22c55e;
 }
 
-/* CALENDAR GRID */
+/* GRID */
 .grid{
   display:grid;
   grid-template-columns:repeat(7,1fr);
-  gap:8px;
+  gap:10px;
 }
 
 .day{
-  height:40px;
-  border-radius:8px;
-  background:#020617;
+  height:45px;
+  border-radius:10px;
+  background:#f1f5f9;
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:12px;
-  border:1px solid rgba(255,255,255,0.08);
-  transition:0.3s;
+  font-size:13px;
+  transition:0.25s;
+  cursor:pointer;
 }
 
 /* COMPLETED */
 .completed{
-  background:linear-gradient(135deg,#22c55e,#4ade80);
-  color:#000;
-  box-shadow:0 0 12px #22c55e;
-}
-
-/* HOVER */
-.day:hover{
-  transform:translateY(-5px) scale(1.05);
-  cursor:pointer;
+  background:#22c55e;
+  color:#fff;
+  box-shadow:0 5px 15px rgba(34,197,94,0.4);
 }
 
 /* TODAY */
 .today{
-  border:1px solid #00f7ff;
-  box-shadow:0 0 10px #00f7ff;
+  border:2px solid #3b82f6;
+}
+
+/* HOVER */
+.day:hover{
+  transform:translateY(-3px);
 }
 
 </style>
@@ -146,61 +126,96 @@ body::before{
 
   <div class="header">
     <h1>🔥 Habit Tracker</h1>
-    <div class="circle"><span>65%</span></div>
+    <div class="circle" id="circle"><span id="percent">0%</span></div>
   </div>
 
   <div class="streak">
     <div>
       <p>Current</p>
-      <h2>9 🔥</h2>
+      <h2 id="current">0 🔥</h2>
     </div>
     <div>
       <p>Best</p>
-      <h2>18 🏆</h2>
+      <h2 id="best">0 🏆</h2>
     </div>
   </div>
 
-  <div class="grid">
-
-    <!-- 30 Days -->
-    <div class="day completed">1</div>
-    <div class="day completed">2</div>
-    <div class="day completed">3</div>
-    <div class="day completed">4</div>
-    <div class="day completed">5</div>
-    <div class="day completed">6</div>
-    <div class="day completed">7</div>
-
-    <div class="day completed">8</div>
-    <div class="day today">9</div>
-    <div class="day">10</div>
-    <div class="day">11</div>
-    <div class="day">12</div>
-    <div class="day">13</div>
-    <div class="day">14</div>
-
-    <div class="day">15</div>
-    <div class="day">16</div>
-    <div class="day">17</div>
-    <div class="day">18</div>
-    <div class="day">19</div>
-    <div class="day">20</div>
-    <div class="day">21</div>
-
-    <div class="day">22</div>
-    <div class="day">23</div>
-    <div class="day">24</div>
-    <div class="day">25</div>
-    <div class="day">26</div>
-    <div class="day">27</div>
-    <div class="day">28</div>
-
-    <div class="day">29</div>
-    <div class="day">30</div>
-
-  </div>
+  <div class="grid" id="grid"></div>
 
 </div>
+
+<script>
+
+const grid = document.getElementById("grid");
+const percentText = document.getElementById("percent");
+const circle = document.getElementById("circle");
+const currentEl = document.getElementById("current");
+const bestEl = document.getElementById("best");
+
+let days = JSON.parse(localStorage.getItem("habitDays")) || [];
+
+// CREATE 30 DAYS
+for(let i=1;i<=30;i++){
+  const div = document.createElement("div");
+  div.classList.add("day");
+  div.innerText = i;
+
+  if(days.includes(i)){
+    div.classList.add("completed");
+  }
+
+  // mark today (demo: 9)
+  if(i === new Date().getDate()){
+    div.classList.add("today");
+  }
+
+  div.addEventListener("click",()=>{
+    div.classList.toggle("completed");
+
+    if(div.classList.contains("completed")){
+      days.push(i);
+    } else {
+      days = days.filter(d=>d!==i);
+    }
+
+    localStorage.setItem("habitDays",JSON.stringify(days));
+    updateUI();
+  });
+
+  grid.appendChild(div);
+}
+
+// UPDATE UI
+function updateUI(){
+
+  let count = days.length;
+
+  // percentage
+  let percent = Math.floor((count/30)*100);
+  percentText.innerText = percent + "%";
+  circle.style.background = `conic-gradient(#22c55e ${percent}%, #e5e7eb 0%)`;
+
+  // streak calculation
+  let sorted = [...days].sort((a,b)=>a-b);
+  let streak = 0;
+  let best = 0;
+
+  for(let i=0;i<sorted.length;i++){
+    if(i===0 || sorted[i] === sorted[i-1]+1){
+      streak++;
+      best = Math.max(best, streak);
+    } else {
+      streak = 1;
+    }
+  }
+
+  currentEl.innerText = streak + " 🔥";
+  bestEl.innerText = best + " 🏆";
+}
+
+updateUI();
+
+</script>
 
 </body>
 </html>

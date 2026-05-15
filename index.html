@@ -23,7 +23,6 @@ body{
   background:#f1f5f9;
 }
 
-/* MAIN CARD */
 .container{
   width:400px;
   padding:25px;
@@ -32,7 +31,6 @@ body{
   box-shadow:0 10px 40px rgba(0,0,0,0.1);
 }
 
-/* HEADER */
 .header{
   display:flex;
   justify-content:space-between;
@@ -45,7 +43,6 @@ body{
   color:#111;
 }
 
-/* CIRCLE PROGRESS */
 .circle{
   width:80px;
   height:80px;
@@ -62,7 +59,6 @@ body{
   color:#111;
 }
 
-/* STREAK */
 .streak{
   display:flex;
   justify-content:space-between;
@@ -81,7 +77,7 @@ body{
   color:#22c55e;
 }
 
-/* GRID */
+
 .grid{
   display:grid;
   grid-template-columns:repeat(7,1fr);
@@ -100,19 +96,16 @@ body{
   cursor:pointer;
 }
 
-/* COMPLETED */
 .completed{
   background:#22c55e;
   color:#fff;
   box-shadow:0 5px 15px rgba(34,197,94,0.4);
 }
 
-/* TODAY */
 .today{
   border:2px solid #3b82f6;
 }
 
-/* HOVER */
 .day:hover{
   transform:translateY(-3px);
 }
@@ -164,7 +157,7 @@ for(let i=1;i<=30;i++){
     div.classList.add("completed");
   }
 
-  // mark today (demo: 9)
+  
   if(i === new Date().getDate()){
     div.classList.add("today");
   }
@@ -185,7 +178,6 @@ for(let i=1;i<=30;i++){
   grid.appendChild(div);
 }
 
-// UPDATE UI
 function updateUI(){
 
   let count = days.length;
